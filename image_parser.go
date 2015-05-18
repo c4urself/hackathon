@@ -11,6 +11,7 @@ import _ "image/png"
 type Region struct {
 	img image.Image
 	offset image.Point
+	baseColour string
 }
 
 func getImageRegions(img image.Image, regionLength int) []Region {
