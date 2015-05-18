@@ -10,6 +10,13 @@ import (
 
 func main() {
 
+	type Region struct {
+		img        image.Image
+		baseColour string
+		x          uint
+		y          uint
+	}
+
 	fBaseImg, _ := os.Open("image.jpeg")
 	defer fBaseImg.Close()
 	baseImg, _, err := image.Decode(fBaseImg)
@@ -28,6 +35,6 @@ func main() {
 	fResultImg, _ := os.Create("new.jpeg")
 	defer fResultImg.Close()
 
-	jpeg.Encode(fResultImg, m, &jpeg.Options{jpeg.DefaultQuality})
-
+	region := Region{img: m}
+	jpeg.Encode(fResultImg, region.img, &jpeg.Options{jpeg.DefaultQuality})
 }
