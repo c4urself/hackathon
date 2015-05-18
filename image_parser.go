@@ -10,7 +10,9 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 import _ "image/png"
@@ -57,8 +59,8 @@ func getImageRegions(img image.Image, regionLength int) []Region {
 // Generate final image from the set of regions
 func generateImage(path string, regions []Region) {
 	// Get size of the final image
-	width := 0;
-	height := 0;
+	width := 0
+	height := 0
 
 	for _, region := range regions {
 		xOffset := region.offset.X + region.img.Bounds().Size().X
@@ -77,10 +79,10 @@ func generateImage(path string, regions []Region) {
 	destinationImage := image.NewRGBA(image.Rect(0, 0, width, height))
 	for _, region := range regions {
 		draw.Draw(destinationImage,
-				 image.Rectangle{Min: region.offset, Max: region.offset.Add(region.img.Bounds().Size())},
-				 region.img,
-				 region.offset,
-				 draw.Src)
+			image.Rectangle{Min: region.offset, Max: region.offset.Add(region.img.Bounds().Size())},
+			region.img,
+			region.offset,
+			draw.Src)
 	}
 
 	// Write it to file
@@ -94,11 +96,11 @@ func getDistanceBetweenColors(first color.Color, second color.Color) float64 {
 	f := first.(color.RGBA)
 	s := second.(color.RGBA)
 
-	distance := math.Pow(float64(f.R) - float64(s.R), 2) + 
-	 			math.Pow(float64(f.G) - float64(s.G), 2) +
-	 			math.Pow(float64(f.B) - float64(s.B), 2)
+	distance := math.Pow(float64(f.R)-float64(s.R), 2) +
+		math.Pow(float64(f.G)-float64(s.G), 2) +
+		math.Pow(float64(f.B)-float64(s.B), 2)
 
-	 return 1 - distance / (255 * 255 * 3)
+	return 1 - distance/(255*255*3)
 }
 
 func main() {
@@ -124,6 +126,9 @@ func main() {
 		png.Encode(fResultImg, region.img)
 	}
 	log.Printf("Generated base colours for each region")
+
+	images := generateImageSet("./thumbnails")
+	fmt.Print(images)
 }
 
 func RGBToHex(r, g, b uint8) string {
@@ -173,4 +178,31 @@ func findBaseColor(img image.Image) color.RGBA {
 	r, g, b := HexToRGB(baseColor)
 	//log.Println("Found base color", baseColor)
 	return color.RGBA{r, g, b, 255}
+}
+
+func generateImageSet(baseDir string) []image.Image {
+	var imageSet []image.Image
+	var totalFound int
+	filepath.Walk(baseDir, func(path string, _ os.FileInfo, _ error) error {
+
+		// only accept PNG for now
+		if strings.HasSuffix(path, ".png") {
+			totalFound += 1
+			fImg, _ := os.Open(path)
+			defer fImg.Close()
+			img, _, err := image.Decode(fImg)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+			imageSet = append(imageSet, img)
+		}
+		return nil
+	})
+
+	if totalFound == 0 {
+		log.Panicf("No thumbnails found!")
+	}
+	log.Printf("Found %v thumbnails", totalFound)
+	return imageSet
 }
