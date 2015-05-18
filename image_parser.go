@@ -10,7 +10,9 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 import _ "image/png"
@@ -57,8 +59,8 @@ func getImageRegions(img image.Image, regionLength int) []Region {
 // Generate final image from the set of regions
 func generateImage(path string, regions []Region) {
 	// Get size of the final image
-	width := 0;
-	height := 0;
+	width := 0
+	height := 0
 
 	for _, region := range regions {
 		xOffset := region.offset.X + region.img.Bounds().Size().X
@@ -76,11 +78,13 @@ func generateImage(path string, regions []Region) {
 	// Draw the image
 	destinationImage := image.NewRGBA(image.Rect(0, 0, width, height))
 	for _, region := range regions {
+		log.Println(region.offset);
+
 		draw.Draw(destinationImage,
-				 image.Rectangle{Min: region.offset, Max: region.offset.Add(region.img.Bounds().Size())},
-				 region.img,
-				 region.offset,
-				 draw.Src)
+			image.Rectangle{Min: region.offset, Max: region.offset.Add(region.img.Bounds().Size())},
+			region.img,
+			region.offset,
+			draw.Src)
 	}
 
 	// Write it to file
@@ -95,7 +99,7 @@ func getSimilarityOfColors(f color.RGBA, s color.RGBA) float64 {
 	 			math.Pow(float64(f.G) - float64(s.G), 2) +
 	 			math.Pow(float64(f.B) - float64(s.B), 2)
 
-	 return 1 - distance / (255 * 255 * 3)
+	return 1 - distance/(255*255*3)
 }
 
 func theBestCandidate(region Region, candidates []Region) Region {
@@ -125,7 +129,8 @@ func matchRegions(originals []Region, thumbnails []image.Image) []Region {
 
 	var result []Region;
 	for _, region := range originals {
-		result = append(result, theBestCandidate(region, candidates))
+		theBest := theBestCandidate(region, candidates);
+		result = append(result, theBest)
 	}
 
 	return result;
@@ -144,18 +149,8 @@ func main() {
 	var regions []Region = getImageRegions(baseImg, 40)
 	log.Printf("Created %v regions", len(regions))
 
-	// for _, region := range regions {
-	// 	// useful debugging, remove later
-	// 	c := findBaseColor(region.img)
-	// 	region.baseColor = c
-
-	// 	fResultImg, _ := os.Create(fmt.Sprintf("%v.%v-%v-test.png", RGBToHex(c.R, c.G, c.B), region.offset.X, region.offset.Y))
-	// 	defer fResultImg.Close()
-	// 	png.Encode(fResultImg, region.img)
-	// }
-	// log.Printf("Generated base colours for each region")
-
-	//generateImage("result.png", matchRegions(regions, []image.Image{img}))
+	//result := matchRegions(regions, generateImageSet("./thumbnails2"));
+	generateImage("result.png", regions);
 }
 
 func RGBToHex(r, g, b uint8) string {
@@ -205,4 +200,31 @@ func findBaseColor(img image.Image) color.RGBA {
 	r, g, b := HexToRGB(baseColor)
 	//log.Println("Found base color", baseColor)
 	return color.RGBA{r, g, b, 255}
+}
+
+func generateImageSet(baseDir string) []image.Image {
+	var imageSet []image.Image
+	var totalFound int
+	filepath.Walk(baseDir, func(path string, _ os.FileInfo, _ error) error {
+
+		// only accept PNG for now
+		if strings.HasSuffix(path, ".png") {
+			totalFound += 1
+			fImg, _ := os.Open(path)
+			defer fImg.Close()
+			img, _, err := image.Decode(fImg)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+			imageSet = append(imageSet, img)
+		}
+		return nil
+	})
+
+	if totalFound == 0 {
+		log.Panicf("No thumbnails found!")
+	}
+	log.Printf("Found %v thumbnails", totalFound)
+	return imageSet
 }
