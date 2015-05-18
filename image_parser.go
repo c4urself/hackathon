@@ -102,22 +102,28 @@ func getSimilarityOfColors(f color.RGBA, s color.RGBA) float64 {
 
 func theBestCandidate(region Region, candidates []Region) Region {
 	var theBest Region
-	var theBestSimilarity float64
+	var theBestSimilarity float64 = 0;
 
 	for _, candidate := range candidates {
 		similarity := getSimilarityOfColors(region.baseColor, candidate.baseColor)
+		log.Println(region.baseColor, candidate.baseColor, similarity, theBestSimilarity)
 		if (similarity > theBestSimilarity) {
 			theBest.img = candidate.img
 			theBest.offset = region.offset
+			theBest.baseColor = candidate.baseColor;
+			theBestSimilarity = similarity;
 		}
 	}
+
+	log.Println(theBest.baseColor)
 
 	return theBest
 }
 
 func matchRegions(originals []Region, thumbnails []image.Image) []Region {
+	var populated []Region;
 	for _, region := range originals {
-		region.baseColor = findBaseColor(region.img)
+		populated = append(populated, Region{img: region.img, offset: region.offset, baseColor: findBaseColor(region.img)})
 	}
 
 	var candidates []Region;
@@ -126,9 +132,8 @@ func matchRegions(originals []Region, thumbnails []image.Image) []Region {
 	}
 
 	var result []Region;
-	for _, region := range originals {
-		theBest := theBestCandidate(region, candidates);
-		result = append(result, theBest)
+	for _, region := range populated {
+		result = append(result, theBestCandidate(region, candidates))
 	}
 
 	return result;
