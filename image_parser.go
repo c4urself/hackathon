@@ -90,15 +90,45 @@ func generateImage(path string, regions []Region) {
 }
 
 // Determines similarity of colors (from 0 to 1). Higher - better
-func getDistanceBetweenColors(first color.Color, second color.Color) float64 {
-	f := first.(color.RGBA)
-	s := second.(color.RGBA)
-
+func getSimilarityOfColors(f color.RGBA, s color.RGBA) float64 {
 	distance := math.Pow(float64(f.R) - float64(s.R), 2) + 
 	 			math.Pow(float64(f.G) - float64(s.G), 2) +
 	 			math.Pow(float64(f.B) - float64(s.B), 2)
 
 	 return 1 - distance / (255 * 255 * 3)
+}
+
+func theBestCandidate(region Region, candidates []Region) Region {
+	var theBest Region
+	var theBestSimilarity float64
+
+	for _, candidate := range candidates {
+		similarity := getSimilarityOfColors(region.baseColor, candidate.baseColor)
+		if (similarity > theBestSimilarity) {
+			theBest.img = candidate.img
+			theBest.offset = region.offset
+		}
+	}
+
+	return theBest
+}
+
+func matchRegions(originals []Region, thumbnails []image.Image) []Region {
+	for _, region := range originals {
+		region.baseColor = findBaseColor(region.img)
+	}
+
+	var candidates []Region;
+	for _, img := range thumbnails {
+		candidates = append(candidates, Region{img: img, baseColor: findBaseColor(img)})
+	}
+
+	var result []Region;
+	for _, region := range originals {
+		result = append(result, theBestCandidate(region, candidates))
+	}
+
+	return result;
 }
 
 func main() {
@@ -114,16 +144,18 @@ func main() {
 	var regions []Region = getImageRegions(baseImg, 40)
 	log.Printf("Created %v regions", len(regions))
 
-	for _, region := range regions {
-		// useful debugging, remove later
-		c := findBaseColor(region.img)
-		region.baseColor = c
+	// for _, region := range regions {
+	// 	// useful debugging, remove later
+	// 	c := findBaseColor(region.img)
+	// 	region.baseColor = c
 
-		fResultImg, _ := os.Create(fmt.Sprintf("%v.%v-%v-test.png", RGBToHex(c.R, c.G, c.B), region.offset.X, region.offset.Y))
-		defer fResultImg.Close()
-		png.Encode(fResultImg, region.img)
-	}
-	log.Printf("Generated base colours for each region")
+	// 	fResultImg, _ := os.Create(fmt.Sprintf("%v.%v-%v-test.png", RGBToHex(c.R, c.G, c.B), region.offset.X, region.offset.Y))
+	// 	defer fResultImg.Close()
+	// 	png.Encode(fResultImg, region.img)
+	// }
+	// log.Printf("Generated base colours for each region")
+
+	//generateImage("result.png", matchRegions(regions, []image.Image{img}))
 }
 
 func RGBToHex(r, g, b uint8) string {
@@ -154,7 +186,7 @@ func findBaseColor(img image.Image) color.RGBA {
 	// for each pixel add to a map
 	for x := 0; x < length; x++ {
 		for y := 0; y < length; y++ {
-			var c color.RGBA = img.At(x, y).(color.RGBA)
+			c := img.At(x, y).(color.RGBA)
 			var hex string = RGBToHex(c.R, c.G, c.B)
 			colorMap[hex] += 1
 		}
