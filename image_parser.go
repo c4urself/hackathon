@@ -78,12 +78,10 @@ func generateImage(path string, regions []Region) {
 	// Draw the image
 	destinationImage := image.NewRGBA(image.Rect(0, 0, width, height))
 	for _, region := range regions {
-		log.Println(region.offset);
-
 		draw.Draw(destinationImage,
 			image.Rectangle{Min: region.offset, Max: region.offset.Add(region.img.Bounds().Size())},
 			region.img,
-			region.offset,
+			image.Point{X:0, Y:0},
 			draw.Src)
 	}
 
@@ -149,8 +147,8 @@ func main() {
 	var regions []Region = getImageRegions(baseImg, 40)
 	log.Printf("Created %v regions", len(regions))
 
-	//result := matchRegions(regions, generateImageSet("./thumbnails2"));
-	generateImage("result.png", regions);
+	result := matchRegions(regions, generateImageSet("./thumbnails2"));
+	generateImage("result.png", result);
 }
 
 func RGBToHex(r, g, b uint8) string {
