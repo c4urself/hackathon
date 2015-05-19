@@ -1,21 +1,17 @@
-package main
+package mosaic
 
 import (
 	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
-	//"image/jpeg"
 	"image/png"
 	"log"
 	"math"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
-
-import _ "image/png"
 
 type Region struct {
 	img       image.Image
@@ -91,21 +87,12 @@ func generateImage(path string, regions []Region) {
 	png.Encode(destinationFile, destinationImage)
 }
 
-// Determines similarity of colors (from 0 to 1). Higher - better
-func getSimilarityOfColors(f color.NRGBA, s color.NRGBA) float64 {
-	distance := math.Pow(float64(f.R)-float64(s.R), 2) +
-		math.Pow(float64(f.G)-float64(s.G), 2) +
-		math.Pow(float64(f.B)-float64(s.B), 2)
-
-	return 1 - distance/(255*255*3)
-}
-
 func theBestCandidate(region Region, candidates []Region) Region {
 	var theBest Region
 	var theBestSimilarity float64 = 0
 
 	for _, candidate := range candidates {
-		similarity := getSimilarityOfColors(region.baseColor, candidate.baseColor)
+		similarity := GetSimilarityOfColors(region.baseColor, candidate.baseColor)
 		log.Println(region.baseColor, candidate.baseColor, similarity, theBestSimilarity)
 		if similarity > theBestSimilarity {
 			theBest.img = candidate.img
@@ -114,21 +101,18 @@ func theBestCandidate(region Region, candidates []Region) Region {
 			theBestSimilarity = similarity
 		}
 	}
-
-	log.Println(theBest.baseColor)
-
 	return theBest
 }
 
 func matchRegions(originals []Region, thumbnails []image.Image) []Region {
 	var populated []Region
 	for _, region := range originals {
-		populated = append(populated, Region{img: region.img, offset: region.offset, baseColor: findBaseColor(region.img)})
+		populated = append(populated, Region{img: region.img, offset: region.offset, baseColor: FindBaseColor(region.img)})
 	}
 
 	var candidates []Region
 	for _, img := range thumbnails {
-		candidates = append(candidates, Region{img: img, baseColor: findBaseColor(img)})
+		candidates = append(candidates, Region{img: img, baseColor: FindBaseColor(img)})
 	}
 
 	var result []Region
@@ -154,56 +138,6 @@ func main() {
 
 	result := matchRegions(regions, generateImageSet("./thumbnails"))
 	generateImage("result.png", result)
-}
-
-func RGBToHex(r, g, b uint8) string {
-	return fmt.Sprintf("#%02X%02X%02X", r, g, b)
-}
-
-func HexToRGB(h string) (uint8, uint8, uint8) {
-	if len(h) > 0 && h[0] == '#' {
-		h = h[1:]
-	}
-	if len(h) == 3 {
-		h = h[:1] + h[:1] + h[1:2] + h[1:2] + h[2:] + h[2:]
-	}
-	if len(h) == 6 {
-		if rgb, err := strconv.ParseUint(string(h), 16, 32); err == nil {
-			return uint8(rgb >> 16), uint8((rgb >> 8) & 0xFF), uint8(rgb & 0xFF)
-		}
-	}
-	return 0, 0, 0
-}
-
-func findBaseColor(img image.Image) color.NRGBA {
-	var rect image.Rectangle = img.Bounds()
-	var length int = rect.Dx()
-
-	var colorMap = make(map[string]int)
-
-	// for each pixel add to a map
-	for x := 0; x < length; x++ {
-		for y := 0; y < length; y++ {
-			//var nrgbaModel color.Model = color.NRGBAModel
-			_c := img.At(x, y)
-			c := color.NRGBAModel.Convert(_c).(color.NRGBA)
-			var hex string = RGBToHex(c.R, c.G, c.B)
-			colorMap[hex] += 1
-		}
-	}
-
-	// for each key, val in map return highest val
-	var baseColor string
-	var highest = 0
-	for k, v := range colorMap {
-		if v > highest {
-			highest = v
-			baseColor = k
-		}
-	}
-
-	r, g, b := HexToRGB(baseColor)
-	return color.NRGBA{r, g, b, 255}
 }
 
 func generateImageSet(baseDir string) []image.Image {
