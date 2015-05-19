@@ -24,7 +24,7 @@ func BreakToTiles(img image.Image, tileSize int) []Tile {
 	imgSize := img.Bounds().Size()
 	xPointsCount := int(math.Ceil(float64(imgSize.X) / float64(tileSize)))
 	yPointsCount := int(math.Ceil(float64(imgSize.Y) / float64(tileSize)))
-	rgbImage := img.(*image.RGBA)
+	rgbImage := img.(*image.RGBA64)
 	startPoint := image.Point{X: 0, Y: 0}
 
 	log.Printf("Creating tiles for %vx%v\n", xPointsCount, yPointsCount)
