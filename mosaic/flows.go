@@ -13,7 +13,7 @@ import (
 type Mosaic struct {
 	Id string
 	OriginalUrl string
-	Url string
+	RelativeUrl string
 	Likes int64
 }
 
@@ -58,10 +58,11 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 		mosaicPath := filepath.Join(mosaicDir, fmt.Sprintf("%s.png", photo.Id))
 		MakeMosaic(photoPath, audienceDir, mosaicPath, 10)
 
-		mosaic = append(mosaic, Mosaic{Id: photo.Id,
-									   Url: fmt.Sprintf("mosaic/%s.png", photo.Id),
-									   OriginalUrl: photo.Url,
-									   Likes: photo.Likes})
+		mosaic = append(mosaic, Mosaic{
+			Id: photo.Id,
+			RelativeUrl: fmt.Sprintf("%s.png", photo.Id),
+			OriginalUrl: photo.Url,
+			Likes: photo.Likes})
 	}
 
 	return mosaic
