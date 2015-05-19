@@ -2,22 +2,25 @@ package mosaic
 
 import (
 	"fmt"
+	"github.com/nfnt/resize"
 	"image"
 	"image/color"
 	"math"
 	"strconv"
 )
 
-func GetGolorPorfile(img image.Image) color.NRGBA {
-	var rect image.Rectangle = img.Bounds()
-	var length int = rect.Dx()
+func GetColorProfile(img image.Image) color.NRGBA {
 
 	var colorMap = make(map[string]int)
+	var length uint = 10
+
+	// create a thumb to shortcut getting most common colours
+	var thumb image.Image = resize.Thumbnail(length, length, img, resize.NearestNeighbor)
 
 	// for each pixel add to a map
-	for x := 0; x < length; x++ {
-		for y := 0; y < length; y++ {
-			c := color.NRGBAModel.Convert(img.At(x, y)).(color.NRGBA)
+	for x := 0; x < int(length); x++ {
+		for y := 0; y < int(length); y++ {
+			c := color.NRGBAModel.Convert(thumb.At(x, y)).(color.NRGBA)
 			var hex string = RGBToHex(c.R, c.G, c.B)
 			colorMap[hex] += 1
 		}
@@ -42,7 +45,7 @@ func GetColorDistance(a color.NRGBA, b color.NRGBA) float64 {
 		math.Pow(float64(a.G)-float64(b.G), 2) +
 		math.Pow(float64(a.B)-float64(b.B), 2)
 
-	return distance / (255*255*3)
+	return distance / (255 * 255 * 3)
 }
 
 func RGBToHex(r, g, b uint8) string {

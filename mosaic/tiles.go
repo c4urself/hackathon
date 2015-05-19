@@ -1,8 +1,8 @@
 package mosaic
 
 import (
-	"github.com/nfnt/resize"
 	"fmt"
+	"github.com/nfnt/resize"
 	"image"
 	"image/color"
 	"image/draw"
@@ -44,10 +44,12 @@ func BreakToTiles(img image.Image, tileSize int) []Tile {
 			draw.Draw(tileImg, tileRectangle, rgbImage, tileMinOffset, draw.Src)
 
 			// add to array of Tiles
-			tile := Tile{img: tileImg, offset: tileMinOffset, baseColor: GetGolorPorfile(tileImg)}
+			tile := Tile{img: tileImg, offset: tileMinOffset, baseColor: GetColorProfile(tileImg)}
 			tiles = append(tiles, tile)
 		}
 	}
+
+	log.Printf("Created %v tiles", len(tiles))
 
 	return tiles
 }
@@ -71,6 +73,7 @@ func CollectFromTiles(tiles []Tile) image.Image {
 		}
 	}
 
+	log.Printf("Drawing mosaic")
 	// Draw the image
 	destinationImage := image.NewRGBA(image.Rect(0, 0, width, height))
 	for _, tile := range tiles {
@@ -81,7 +84,7 @@ func CollectFromTiles(tiles []Tile) image.Image {
 			draw.Src)
 	}
 
-	return destinationImage;
+	return destinationImage
 }
 
 // Imports tiles from thumbnails directory
@@ -100,8 +103,8 @@ func ImportTiles(baseDir string, tileSize int) []Tile {
 				fmt.Println(err.Error())
 				os.Exit(1)
 			}
-			img = resize.Resize(uint(tileSize), 0, img, resize.Lanczos3)
-			tiles = append(tiles, Tile{img: img, offset: image.Point{X:0, Y:0}, baseColor: GetGolorPorfile(img)})
+			img = resize.Resize(uint(tileSize), 0, img, resize.NearestNeighbor)
+			tiles = append(tiles, Tile{img: img, offset: image.Point{X: 0, Y: 0}, baseColor: GetColorProfile(img)})
 		}
 		return nil
 	})
@@ -118,9 +121,11 @@ func ImportTiles(baseDir string, tileSize int) []Tile {
 func FindSimilarTiles(originals []Tile, candidates []Tile) []Tile {
 	var similar []Tile
 
+	log.Printf("Finding matching tiles")
+
 	for _, original := range originals {
-		var minDistance float64 = 2;
-		var theBest Tile;
+		var minDistance float64 = 2
+		var theBest Tile
 
 		for _, candidate := range candidates {
 			distance := GetColorDistance(original.baseColor, candidate.baseColor)
