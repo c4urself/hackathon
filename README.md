@@ -1,5 +1,16 @@
-# hackathon
-Go webserver and image parser ?
+# Tubular Hackathon
+
+GOAL:
+An app that takes an Instagram profile as an input and generates a mosaic of their most famous photo's commenters.
+
+### Web application
+
+BONUS/IDEAS:
+- Allow choice of top 5 most famous photos as a 2nd step
+- Authentication
+- Autocomplete Instagram profile name?
+
+### Mosaic builder
 
 
 - [x] Write a matrix of image.Image regions that represent the original
@@ -8,6 +19,6 @@ Go webserver and image parser ?
    - `func findBaseColor(image image.Image) color.RGBA` 
 - [x] Write a function that calculates color distance between two colors
    - `func getDistanceBetweenColors(color1 color.Color, color2 color.Color) float`
-- [ ] Write a function that opens up image set (openImageSet)  
-- [ ] Write a function that goes through each region and assigns an image (assignImage)  
-- [ ] Write a function that generates the image (writeMosaic)  
+- [x] Write a function that opens up image set (openImageSet)  
+- [x] Write a function that goes through each region and assigns an image (assignImage)  
+- [x] Write a function that generates the image (writeMosaic)  
