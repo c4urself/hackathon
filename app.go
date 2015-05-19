@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "fmt"
-	// "github.com/c4urself/hackathon/mosaic"
 	"github.com/c4urself/hackathon/web"
 )
 

@@ -5,40 +5,41 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/jeffail/gabs"
-	"net/http"
 	"image/jpeg"
- 	"image/png"
+	"image/png"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
 )
 
 type Photo struct {
-	Id string
-	Url string
+	Id    string
+	Url   string
 	Likes int64
 }
 
 type Photos []Photo
 
 func (s Photos) Len() int {
-    return len(s)
+	return len(s)
 }
 
 func (s Photos) Swap(i, j int) {
-    s[i], s[j] = s[j], s[i]
+	s[i], s[j] = s[j], s[i]
 }
 
 func (s Photos) Less(i, j int) bool {
-    return s[i].Likes < s[j].Likes
+	return s[i].Likes < s[j].Likes
 }
 
 type CreatorFeed struct {
-	Photos Photos
+	Photos   Photos
 	Audience Photos
 }
 
@@ -49,6 +50,12 @@ func NewPhoto(url string, likes int64) Photo {
 func Hash(s string) string {
 	hash := md5.Sum([]byte(s))
 	return hex.EncodeToString(hash[:])
+}
+
+func (f CreatorFeed) GetTopPhotos(count int) Photos {
+	sort.Sort(sort.Reverse(Photos(f.Photos)))
+	topPhotos := f.Photos[:count]
+	return topPhotos
 }
 
 // Fetches photos/auedience from Instagram by username
@@ -77,9 +84,9 @@ func GetCreatorFeed(username string) CreatorFeed {
 	items, _ := jresp.Search("items").Children()
 
 	var creatorPhotos Photos
-	var audiencePhotos map[string]bool = make(map[string]bool, len(items) * 50)
+	var audiencePhotos map[string]bool = make(map[string]bool, len(items)*50)
 
-	for _, item := range items  {
+	for _, item := range items {
 		url := item.Path("images.standard_resolution.url").String()
 		url = strings.Trim(url, "\"")
 		likes, _ := strconv.ParseInt(item.Path("likes.count").String(), 10, 64)
@@ -95,7 +102,7 @@ func GetCreatorFeed(username string) CreatorFeed {
 		commenters, _ := item.Path("comments.data.from.profile_picture").Children()
 		for _, commenter := range commenters {
 			audiencePhotos[commenter.String()] = true
-		}	
+		}
 	}
 
 	// Audience includes only unique urls and doesn't include placeholder photo
@@ -118,7 +125,7 @@ func LoadPhotos(photos Photos, baseDir string) {
 
 		go func(p Photo, b string) {
 			defer wg.Done()
-			
+
 			log.Printf("Loading photo %s", p.Url)
 
 			fPath := filepath.Join(b, fmt.Sprintf("%s.png", p.Id))

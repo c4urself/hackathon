@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"github.com/c4urself/hackathon/feeders"
 	"github.com/c4urself/hackathon/mosaic"
 	"github.com/gin-gonic/gin"
 	"html/template"
@@ -25,11 +26,16 @@ func StartApp() {
 	// Search page
 	r.GET("/search", func(c *gin.Context) {
 		c.Request.ParseForm()
-
 		username := c.Request.Form.Get("username")
 
-		message := "Hello " + username
-		c.String(http.StatusOK, message)
+		var topPhotos feeders.Photos
+		feed := feeders.GetCreatorFeed(username)
+		topPhotos = feed.GetTopPhotos(5)
+
+		obj := gin.H{"top_photos": topPhotos}
+		tmpl := template.Must(template.ParseFiles(BASE_TMPL, "templates/result.tmpl"))
+		r.SetHTMLTemplate(tmpl)
+		c.HTML(200, "base", obj)
 	})
 
 	// Result page
@@ -48,8 +54,8 @@ func StartApp() {
 
 		c.JSON(200, gin.H{
 			"username": username,
-			"baseUrl": fmt.Sprintf("/static/mosaic/%s/", username),
-			"mosaics": mosaics})
+			"baseUrl":  fmt.Sprintf("/static/mosaic/%s/", username),
+			"mosaics":  mosaics})
 	})
 
 	r.Run(":8080")

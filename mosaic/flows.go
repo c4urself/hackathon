@@ -1,20 +1,19 @@
 package mosaic
 
 import (
-	"github.com/c4urself/hackathon/feeders"
 	"fmt"
+	"github.com/c4urself/hackathon/feeders"
 	"image"
 	"image/png"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 type Mosaic struct {
-	Id string
+	Id          string
 	OriginalUrl string
 	RelativeUrl string
-	Likes int64
+	Likes       int64
 }
 
 func MakeMosaic(mainPath string, thumbnailsPath string, mosaicPath string, tileSize int) {
@@ -30,7 +29,7 @@ func MakeMosaic(mainPath string, thumbnailsPath string, mosaicPath string, tileS
 	// Generate mosaic
 	originalTiles := BreakToTiles(baseImg, tileSize)
 	candidateTiles := ImportTiles(thumbnailsPath, tileSize)
-	similarTiles := FindSimilarTiles(originalTiles, candidateTiles) 
+	similarTiles := FindSimilarTiles(originalTiles, candidateTiles)
 	mosaicImage := CollectFromTiles(similarTiles)
 
 	// Write result
@@ -45,8 +44,7 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 	os.MkdirAll(mosaicDir, 0777)
 
 	feed := feeders.GetCreatorFeed(username)
-	sort.Sort(sort.Reverse(feeders.Photos(feed.Photos)))
-	topPhotos := feed.Photos[:5]
+	topPhotos := feed.GetTopPhotos(5)
 
 	feeders.LoadPhotos(topPhotos, photosDir)
 	feeders.LoadPhotos(feed.Audience, audienceDir)
@@ -59,10 +57,10 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 		MakeMosaic(photoPath, audienceDir, mosaicPath, 10)
 
 		mosaic = append(mosaic, Mosaic{
-			Id: photo.Id,
+			Id:          photo.Id,
 			RelativeUrl: fmt.Sprintf("%s.png", photo.Id),
 			OriginalUrl: photo.Url,
-			Likes: photo.Likes})
+			Likes:       photo.Likes})
 	}
 
 	return mosaic

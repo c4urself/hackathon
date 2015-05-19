@@ -1,14 +1,29 @@
 body {
-  background-image: url('../img/exclusive_paper.png');
-}
-
-.logo img {
-  border-radius: 10px;
-  margin-bottom: 20px;
+  background-image: url('../img/dark_embroidery.png');
 }
 
 .page {
-  margin-top: 25px
+  position: relative;
+  margin: 0px auto
+}
+
+.front {
+  position: relative;
+  top: 0px;
+  height: 200px;
+  background-image: url('../img/exclusive_paper.png');
+  box-shadow: 0px 5px 5px black;
+}
+.tubular-mosaic {
+  position: relative;
+  top: 50px;
+  margin: 0px auto;
+  background-image: url('../img/mosaic-logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 300px;
+  height: 100px;
+
 }
 
 .jumbotron {
@@ -16,8 +31,14 @@ body {
 }
 
 .instagram {
-  background-image: url('../img/instagram.png');
+  background: url('../img/instagram.png') no-repeat;
   background-size: contain;
-  width: 150px;
-  height: 150px;
+  width: 75px;
+  height: 75px;
+}
+
+.search-box {
+  position: relative;
+  top: 50px;
+  height: 75px;
 }
