@@ -5,6 +5,9 @@ An app that takes an Instagram profile as an input and generates a mosaic of the
 
 ### Web application
 
+- [ ] Write a basic web application that takes and processes an input (Instagram username)
+
+
 BONUS/IDEAS:
 - Allow choice of top 5 most famous photos as a 2nd step
 - Authentication
