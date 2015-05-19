@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/c4urself/hackathon/mosaic"
-	// "github.com/c4urself/hackathon/web"
+	// "github.com/c4urself/hackathon/mosaic"
+	"github.com/c4urself/hackathon/web"
 )
 
 func main() {
-	mosaic.MakeInstagramMosaic("pewdiepie", "/tmp/pewdiepie/photos", "/tmp/pewdiepie/audience", "/tmp/pewdiepie/mosaic/")
-	//mosaic.MakeMosaic("image.png", "./thumbnails/", "result.png", 10)
-	// web.StartApp()
+	// fmt.Println(mosaic.MakeInstagramMosaic("pewdiepie", "/tmp/pewdiepie/photos", "/tmp/pewdiepie/audience", "/tmp/pewdiepie/mosaic/"))
+	// mosaic.MakeMosaic("image.png", "./thumbnails/", "result.png", 10)
+	web.StartApp()
 }

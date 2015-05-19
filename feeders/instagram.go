@@ -22,9 +22,23 @@ type Photo struct {
 	Likes int64
 }
 
+type Photos []Photo
+
+func (s Photos) Len() int {
+    return len(s)
+}
+
+func (s Photos) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+
+func (s Photos) Less(i, j int) bool {
+    return s[i].Likes < s[j].Likes
+}
+
 type CreatorFeed struct {
-	Photos []Photo
-	Audience []Photo
+	Photos Photos
+	Audience Photos
 }
 
 func NewPhoto(url string, likes int64) Photo {
@@ -61,7 +75,7 @@ func GetCreatorFeed(username string) CreatorFeed {
 	// Fetch profile photos
 	items, _ := jresp.Search("items").Children()
 
-	var creatorPhotos []Photo
+	var creatorPhotos Photos
 	var audiencePhotos map[string]bool = make(map[string]bool, len(items) * 50)
 
 	for _, item := range items  {
@@ -84,7 +98,7 @@ func GetCreatorFeed(username string) CreatorFeed {
 	}
 
 	// Audience includes only unique urls and doesn't include placeholder photo
-	var audience []Photo
+	var audience Photos
 	for k := range audiencePhotos {
 		k = strings.Trim(k, "\"")
 		if k != "https://instagramimages-a.akamaihd.net/profiles/anonymousUser.jpg" {
@@ -95,7 +109,7 @@ func GetCreatorFeed(username string) CreatorFeed {
 	return CreatorFeed{Photos: creatorPhotos, Audience: audience}
 }
 
-func LoadPhotos(photos []Photo, baseDir string) {
+func LoadPhotos(photos Photos, baseDir string) {
 	for _, photo := range photos {
 		log.Printf("Loading photo %s", photo.Url)
 
