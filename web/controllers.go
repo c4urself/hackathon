@@ -1,6 +1,8 @@
 package web
 
 import (
+	"fmt"
+	"github.com/c4urself/hackathon/mosaic"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
@@ -33,6 +35,21 @@ func StartApp() {
 	// Result page
 	r.GET("/result", func(c *gin.Context) {
 		c.String(http.StatusOK, "arst")
+	})
+
+	// Mosaic page
+	r.GET("/mosaic/:username", func(c *gin.Context) {
+		username := c.Params.ByName("username")
+		mosaics := mosaic.MakeInstagramMosaic(
+			username,
+			fmt.Sprintf("/tmp/hack/%s/photos/", username),
+			fmt.Sprintf("/tmp/hack/%s/audience/", username),
+			fmt.Sprintf("./static/mosaic/%s/", username))
+
+		c.JSON(200, gin.H{
+			"username": username,
+			"baseUrl": fmt.Sprintf("/static/mosaic/%s/", username),
+			"mosaics": mosaics})
 	})
 
 	r.Run(":8080")
