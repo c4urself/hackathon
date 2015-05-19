@@ -1,0 +1,23 @@
+body {
+  background-image: url('../img/exclusive_paper.png');
+}
+
+.logo img {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.page {
+  margin-top: 25px
+}
+
+.jumbotron {
+  background-color: #00304c;
+}
+
+.instagram {
+  background-image: url('../img/instagram.png');
+  background-size: contain;
+  width: 150px;
+  height: 150px;
+}
