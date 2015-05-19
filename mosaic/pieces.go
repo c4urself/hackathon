@@ -5,6 +5,8 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	//"image/jpeg"
+	"github.com/nfnt/resize"
 	"image/png"
 	"log"
 	"math"
@@ -12,6 +14,8 @@ import (
 	"path/filepath"
 	"strings"
 )
+
+const TILE_LENGTH = 10
 
 type Region struct {
 	img       image.Image
@@ -93,7 +97,6 @@ func theBestCandidate(region Region, candidates []Region) Region {
 
 	for _, candidate := range candidates {
 		similarity := GetSimilarityOfColors(region.baseColor, candidate.baseColor)
-		log.Println(region.baseColor, candidate.baseColor, similarity, theBestSimilarity)
 		if similarity > theBestSimilarity {
 			theBest.img = candidate.img
 			theBest.offset = region.offset
@@ -138,7 +141,8 @@ func generateImageSet(baseDir string) []image.Image {
 				fmt.Println(err.Error())
 				os.Exit(1)
 			}
-			imageSet = append(imageSet, img)
+			m := resize.Resize(TILE_LENGTH, 0, img, resize.Lanczos3)
+			imageSet = append(imageSet, m)
 		}
 		return nil
 	})
@@ -146,6 +150,7 @@ func generateImageSet(baseDir string) []image.Image {
 	if totalFound == 0 {
 		log.Panicf("No thumbnails found!")
 	}
+
 	log.Printf("Found %v thumbnails", totalFound)
 	return imageSet
 }
