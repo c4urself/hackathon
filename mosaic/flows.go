@@ -17,7 +17,7 @@ func MakeMosaic(mainPath string, thumbnailsPath string, mosaicPath string) {
 		os.Exit(1)
 	}
 
-	var regions []Region = getImageRegions(baseImg, 40)
+	var regions []Region = getImageRegions(baseImg, TILE_LENGTH)
 	log.Printf("Created %v regions", len(regions))
 
 	result := matchRegions(regions, generateImageSet(thumbnailsPath))
