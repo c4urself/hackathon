@@ -8,8 +8,10 @@ import (
 	"image/draw"
 	"log"
 	"math"
+	"math/rand"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -119,24 +121,48 @@ func ImportTiles(baseDir string, tileSize int) []Tile {
 
 // Matches original tiles with list of suggested
 func FindSimilarTiles(originals []Tile, candidates []Tile) []Tile {
+
 	var similar []Tile
 
 	log.Printf("Finding matching tiles")
 
 	for _, original := range originals {
-		var minDistance float64 = 2
-		var theBest Tile
+		var pick TileDistance
+		var chosenTile Tile
+		var distanceMap = make(map[Tile]float64)
 
 		for _, candidate := range candidates {
 			distance := GetColorDistance(original.baseColor, candidate.baseColor)
-			if distance < minDistance {
-				theBest = Tile{img: candidate.img, offset: original.offset, baseColor: candidate.baseColor}
-				minDistance = distance
-			}
+			distanceMap[candidate] = distance
 		}
-
-		similar = append(similar, theBest)
+		orderedCandidates := sortMapByValue(distanceMap)
+		position := rand.Intn(5)
+		pick = orderedCandidates[position]
+		chosenTile = Tile{img: pick.tile.img, offset: original.offset, baseColor: pick.tile.baseColor}
+		similar = append(similar, chosenTile)
 	}
 
 	return similar
+}
+
+type TileDistance struct {
+	tile     Tile
+	distance float64
+}
+
+type OrderedTileDistanceList []TileDistance
+
+func (p OrderedTileDistanceList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p OrderedTileDistanceList) Len() int           { return len(p) }
+func (p OrderedTileDistanceList) Less(i, j int) bool { return p[i].distance < p[j].distance }
+
+func sortMapByValue(m map[Tile]float64) OrderedTileDistanceList {
+	var p OrderedTileDistanceList = make(OrderedTileDistanceList, len(m))
+	i := 0
+	for k, v := range m {
+		p[i] = TileDistance{k, v}
+		i++
+	}
+	sort.Sort(p)
+	return p[0:10]
 }
