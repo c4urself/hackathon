@@ -1,5 +1,14 @@
 {{define "content"}}
-  <form method="GET" action="/search">
-    <input type="input" name="username" />
-  </form>
+  <div>
+    <div class="logo">
+      <img src="/static/img/logo.png" width="150" / >
+      <div class="instagram"></div>
+    </div>
+
+    <form method="GET" action="/search">
+      <div class="form-group">
+        <input id="username" class="form-control" type="input" name="username" placeholder="Search for an Instagram username" />
+      </div>
+    </form>
+  </div>
 {{end}}

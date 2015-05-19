@@ -3,11 +3,14 @@
   <head>
     <title>Tubular Hackathon</title>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-    <link type="text/css" href="/static/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/app.css" />
   </head>
   <body>
-    <div>
-      {{template "content" .}}
+    <div class="page">
+      <div class="container-fluid">
+        {{template "content" .}}
+      </div>
     </div>
   </body>
 </html>
