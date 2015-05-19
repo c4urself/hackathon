@@ -123,23 +123,6 @@ func matchRegions(originals []Region, thumbnails []image.Image) []Region {
 	return result
 }
 
-func main() {
-	fBaseImg, _ := os.Open("image.png")
-	defer fBaseImg.Close()
-	baseImg, _, err := image.Decode(fBaseImg)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	var regions []Region = getImageRegions(baseImg, 40)
-	log.Printf("Created %v regions", len(regions))
-
-	result := matchRegions(regions, generateImageSet("./thumbnails"))
-	generateImage("result.png", result)
-}
-
 func generateImageSet(baseDir string) []image.Image {
 	var imageSet []image.Image
 	var totalFound int
