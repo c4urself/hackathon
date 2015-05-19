@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	mosaic.MakeMosaic("image.png", "./thumbnails/", "result.png")
+	mosaic.MakeMosaic("image.png", "./thumbnails/", "result.png", 10)
 }
