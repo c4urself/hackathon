@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Photo struct {
@@ -110,28 +111,39 @@ func GetCreatorFeed(username string) CreatorFeed {
 }
 
 func LoadPhotos(photos Photos, baseDir string) {
+	var wg sync.WaitGroup
+
 	for _, photo := range photos {
-		log.Printf("Loading photo %s", photo.Url)
+		wg.Add(1)
 
-		fPath := filepath.Join(baseDir, fmt.Sprintf("%s.png", photo.Id))
-		f, err := os.Create(fPath)
-		defer f.Close()
-		if err != nil {
-			log.Printf("Unable to create photo for loading %s, %s", fPath, err)
-			continue
-		}
+		go func(p Photo, b string) {
+			defer wg.Done()
+			
+			log.Printf("Loading photo %s", p.Url)
 
-		resp, err := http.Get(photo.Url)
-		if err != nil {
-			log.Printf("Unable to fetch photo %s, %s", photo.Url, err)
-			continue
-		}
+			fPath := filepath.Join(b, fmt.Sprintf("%s.png", p.Id))
+			f, err := os.Create(fPath)
+			defer f.Close()
+			if err != nil {
+				log.Printf("Unable to create photo for loading %s, %s", fPath, err)
+				return
+			}
 
-		img, err := jpeg.Decode(resp.Body)
-		if err != nil {
-			log.Printf("Unable to convert jpg -> png %s, %s", photo.Url, err)
-		}
+			resp, err := http.Get(p.Url)
+			if err != nil {
+				log.Printf("Unable to fetch photo %s, %s", p.Url, err)
+				return
+			}
 
-		png.Encode(f, img)
+			img, err := jpeg.Decode(resp.Body)
+			if err != nil {
+				log.Printf("Unable to convert jpg -> png %s, %s", p.Url, err)
+				return
+			}
+
+			png.Encode(f, img)
+		}(photo, baseDir)
 	}
+
+	wg.Wait()
 }
