@@ -67,8 +67,6 @@ func StartApp() {
 		}
 		cache, err := redis.String(client.Do("GET", cachecKey))
 
-		fmt.Println(cache, err)
-
 		var mosaics []mosaic.Mosaic
 		if err == nil {
 			mosaics = deserialize(cache)
