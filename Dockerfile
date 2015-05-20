@@ -27,6 +27,7 @@ RUN mkdir -p /opt/go/src/github.com/c4urself
 ADD . /opt/go/src/github.com/c4urself/hackathon
 WORKDIR /opt/go/src/github.com/c4urself/hackathon
 ENV GOPATH /opt/go
+RUN make vendor_update
 RUN make
 
 # Setup nginx and supervisor

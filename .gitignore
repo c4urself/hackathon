@@ -27,3 +27,4 @@ _testmain.go
 result.png
 .DS_Store
 main
+_vendors/
