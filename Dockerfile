@@ -17,6 +17,9 @@ RUN add-apt-repository ppa:nginx/stable -y
 RUN apt-get update
 RUN apt-get install -y nginx
 
+# Install redis
+RUN apt-get -y install redis-server
+
 # Install latest Golang
 RUN wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
 RUN tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
