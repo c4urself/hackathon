@@ -164,5 +164,5 @@ func sortMapByValue(m map[Tile]float64) OrderedTileDistanceList {
 		i++
 	}
 	sort.Sort(p)
-	return p[0:int(math.Min(float64(len(p)),10))]
+	return p[0:int(math.Min(float64(len(p)), 10))]
 }

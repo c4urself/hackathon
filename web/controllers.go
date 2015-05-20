@@ -21,11 +21,11 @@ func StartApp() {
 	// Redis connection
 	redisPool := redis.NewPool(func() (redis.Conn, error) {
 		c, err := redis.Dial("tcp", REDIS_ADDRESS)
- 
+
 		if err != nil {
 			return nil, err
 		}
- 
+
 		return c, err
 	}, 10)
 	defer redisPool.Close()
@@ -78,11 +78,11 @@ func StartApp() {
 				fmt.Sprintf("./static/mosaic/%s/", username))
 			client.Do("SET", cachecKey, serialize(mosaics))
 		}
-		
+
 		obj := gin.H{
 			"username": c.Params.ByName("username"),
 			"baseUrl":  fmt.Sprintf("/static/mosaic/%s/", username),
-			"mosaics": mosaics}
+			"mosaics":  mosaics}
 
 		tmpl := template.Must(template.ParseFiles(BASE_TMPL, "templates/result.tmpl"))
 		r.SetHTMLTemplate(tmpl)

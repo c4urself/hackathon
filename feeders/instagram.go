@@ -59,7 +59,7 @@ func (f CreatorFeed) GetTopPhotos(count int) Photos {
 		topPhotos = f.Photos[:len(f.Photos)]
 	} else {
 		topPhotos = f.Photos[:count]
-	}	
+	}
 	return topPhotos
 }
 
@@ -134,7 +134,7 @@ func LoadPhotos(photos Photos, baseDir string) {
 	// Populate channel with tasks
 	for _, photo := range photos {
 		tasks <- Task{
-			url: photo.Url,
+			url:  photo.Url,
 			path: filepath.Join(baseDir, fmt.Sprintf("%s.png", photo.Id))}
 	}
 	close(tasks)
@@ -147,7 +147,7 @@ func LoadPhotos(photos Photos, baseDir string) {
 }
 
 type Task struct {
-	url string
+	url  string
 	path string
 }
 
