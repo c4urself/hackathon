@@ -1,34 +1,26 @@
-<html>
-	<head>
-		<title>Tubualar Hackathon by Cockroaches</title>
-	</head>
-	<body>
-		<div class="viewer">
-			<div class="sidebar">
-				<div class="menu">
-					<div class="logo"></div>
-					<div class="search">
-						instagram.com /
-						<input type="text" value="{{ .username }}" autofocus onfocus="this.value = this.value;"/> 
-					</div>
-				</div>
-				<div class="photos">
-					{{ range $index, $mosaic := .mosaics }}
-						<div class="photo" data-mosaic="/static/mosaic/nba/{{ $mosaic.RelativeUrl }}">
-							<img src="{{ $mosaic.OriginalUrl }}" />
-							<span class="likes">{{ $mosaic.Likes }}</span>
-						</div>
-					{{ end }}
-				</div>
-			</div>
-			<div class="mosaic">
-				<div class="mat">
-					<img src="" />
-				</div>
+{{ define "content" }}
+<div class="viewer">
+	<div class="sidebar">
+		<div class="menu">
+			<div class="logo"></div>
+			<div class="search">
+				instagram.com /
+				<input type="text" value="{{ .username }}" autofocus onfocus="this.value = this.value;"/> 
 			</div>
 		</div>
-		<link type="text/css" rel="stylesheet" href="/static/css/result.css" />
-		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-		<script type="text/javascript" src="/static/js/result.js"></script>
-	</body>
-</html>
+		<div class="photos">
+			{{ range $index, $mosaic := .mosaics }}
+				<div class="photo" data-mosaic="{{ $.baseUrl }}{{ $mosaic.RelativeUrl }}">
+					<img src="{{ $mosaic.OriginalUrl }}" />
+					<span class="likes">{{ $mosaic.Likes }}</span>
+				</div>
+			{{ end }}
+		</div>
+	</div>
+	<div class="mosaic">
+		<div class="mat">
+			<img src="" />
+		</div>
+	</div>
+</div>
+{{ end }}

@@ -13,7 +13,6 @@ const BASE_TMPL = "templates/base.tmpl"
 func StartApp() {
 	r := gin.Default()
 	r.Static("/static", "./static")
-	r.LoadHTMLGlob("templates/*")
 
 	// Homepage
 	r.GET("/", func(c *gin.Context) {
@@ -47,10 +46,14 @@ func StartApp() {
 			fmt.Sprintf("/tmp/hack/%s/audience/", username),
 			fmt.Sprintf("./static/mosaic/%s/", username))
 
-		c.HTML(200, "result.tmpl", gin.H{
+		obj := gin.H{
 			"username": c.Params.ByName("username"),
 			"baseUrl":  fmt.Sprintf("/static/mosaic/%s/", username),
-			"mosaics": mosaics})
+			"mosaics": mosaics}
+
+		tmpl := template.Must(template.ParseFiles(BASE_TMPL, "templates/result.tmpl"))
+		r.SetHTMLTemplate(tmpl)
+		c.HTML(200, "base", obj)
 	})
 
 	r.Run(":8080")
