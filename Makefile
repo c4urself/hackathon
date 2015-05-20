@@ -9,25 +9,25 @@ export GOPATH
 default: build
 
 build: vet
-	go build -v -o ./bin/main_app ./src/main_app
+	go build -v -o ./main ./app
 
 doc:
 	godoc -http=:6060 -index
 
 # http://golang.org/cmd/go/#hdr-Run_gofmt_on_package_sources
 fmt:
-	go fmt ./src/...
+	go fmt .
 
 # https://github.com/golang/lint
 # go get github.com/golang/lint/golint
 lint:
-	golint ./src
+	golint ./app
 
 run: build
 	./bin/main_app
 
 test:
-	go test ./src/...
+	go test ./app/...
 
 vendor_clean:
 	rm -dRf ./_vendor/src
@@ -38,12 +38,10 @@ vendor_clean:
 # This will happen if you already have the package
 # installed in GOPATH since `go get` will use
 # that existing location as the destination.
-vendor_get:	vendor_clean
-	GOPATH=${PWD}/_vendor go get -d -u -v \
-	github.com/jpoehls/gophermail \
-	github.com/codegangsta/martini
+vendor_get:	 vendor_clean
+	GOPATH=${PWD}/_vendor go get -d -u -v `cat dependencies.txt`
 
-vendor_update: vendor_get
+vendor_update:	vendor_get
 	rm -rf `find ./_vendor/src -type d -name .git` \
 	&& rm -rf `find ./_vendor/src -type d -name .hg` \
 	&& rm -rf `find ./_vendor/src -type d -name .bzr` \
@@ -52,4 +50,4 @@ vendor_update: vendor_get
 # http://godoc.org/code.google.com/p/go.tools/cmd/vet
 # go get code.google.com/p/go.tools/cmd/vet
 vet:
-	go vet ./src/...
+	go vet ./app/...
