@@ -1,6 +1,7 @@
 $(function() {
 	var photos = $(".photo"),
-	    mosaic = $(".mosaic .mat img");
+	    mosaic = $(".mosaic .mat img"),
+	    search = $(".search");
 
 	function switchPhoto(photo, speed) {
 		mosaic.fadeOut(speed, function() {
@@ -14,6 +15,11 @@ $(function() {
 	photos.click(function() {
 		switchPhoto($(this), 300);
 	});
+
+	search.submit(function(e) {
+		e.preventDefault();
+		document.location = "/mosaic/" + search.find("input").val();
+	})
 
 	switchPhoto(photos.first(), 0);
 });
