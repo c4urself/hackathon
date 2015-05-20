@@ -1,18 +1,14 @@
-{{define "base"}}
+{{ define "base" }}
 <html>
   <head>
     <title>Tubular Hackathon</title>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/result.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/result.js"></script>
     <link type="text/css" rel="stylesheet" href="/static/css/app.css" />
   </head>
   <body>
-    <div class="page">
-      <div class="front">
-        <div class="tubular-mosaic"></div>
-      </div>
-      {{template "content" .}}
-    </div>
+    {{ template "content" . }}
   </body>
 </html>
-{{end}}
+{{ end }}

@@ -39,12 +39,16 @@ func MakeMosaic(mainPath string, thumbnailsPath string, mosaicPath string, tileS
 }
 
 func MakeInstagramMosaic(username string, photosDir string, audienceDir string, mosaicDir string) []Mosaic {
+	os.RemoveAll(photosDir)
+	os.RemoveAll(audienceDir)
+	os.RemoveAll(mosaicDir)
+
 	os.MkdirAll(photosDir, 0777)
 	os.MkdirAll(audienceDir, 0777)
 	os.MkdirAll(mosaicDir, 0777)
 
 	feed := feeders.GetCreatorFeed(username)
-	topPhotos := feed.GetTopPhotos(5)
+	topPhotos := feed.GetTopPhotos(6)
 
 	feeders.LoadPhotos(topPhotos, photosDir)
 	feeders.LoadPhotos(feed.Audience, audienceDir)
@@ -54,7 +58,7 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 	for _, photo := range topPhotos {
 		photoPath := filepath.Join(photosDir, fmt.Sprintf("%s.png", photo.Id))
 		mosaicPath := filepath.Join(mosaicDir, fmt.Sprintf("%s.png", photo.Id))
-		MakeMosaic(photoPath, audienceDir, mosaicPath, 10)
+		MakeMosaic(photoPath, audienceDir, mosaicPath, 5)
 
 		mosaic = append(mosaic, Mosaic{
 			Id:          photo.Id,

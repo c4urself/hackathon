@@ -136,7 +136,7 @@ func FindSimilarTiles(originals []Tile, candidates []Tile) []Tile {
 			distanceMap[candidate] = distance
 		}
 		orderedCandidates := sortMapByValue(distanceMap)
-		position := rand.Intn(10)
+		position := rand.Intn(len(orderedCandidates))
 		pick = orderedCandidates[position]
 		chosenTile = Tile{img: pick.tile.img, offset: original.offset, baseColor: pick.tile.baseColor}
 		similar = append(similar, chosenTile)
@@ -164,5 +164,5 @@ func sortMapByValue(m map[Tile]float64) OrderedTileDistanceList {
 		i++
 	}
 	sort.Sort(p)
-	return p[0:10]
+	return p[0:int(math.Min(float64(len(p)),10))]
 }
