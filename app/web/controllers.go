@@ -3,11 +3,11 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/c4urself/hackathon/app/feeders"
 	"github.com/c4urself/hackathon/app/mosaic"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	//"net/http"
 	"strings"
 )
 
@@ -42,15 +42,7 @@ func StartApp() {
 	r.GET("/search", func(c *gin.Context) {
 		c.Request.ParseForm()
 		username := c.Request.Form.Get("username")
-
-		var topPhotos feeders.Photos
-		feed := feeders.GetCreatorFeed(username)
-		topPhotos = feed.GetTopPhotos(5)
-
-		obj := gin.H{"top_photos": topPhotos}
-		tmpl := template.Must(template.ParseFiles(BASE_TMPL, "templates/result.tmpl"))
-		r.SetHTMLTemplate(tmpl)
-		c.HTML(200, "base", obj)
+		c.Redirect(302, "/mosaic/"+username)
 	})
 
 	// Result page

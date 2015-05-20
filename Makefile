@@ -24,7 +24,7 @@ lint:
 	golint ./app
 
 run: build
-	./bin/main_app
+	./bin/main
 
 test:
 	go test ./app/...

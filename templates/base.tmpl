@@ -2,13 +2,15 @@
 <html>
   <head>
     <title>Tubular Hackathon</title>
-    <link type="text/css" rel="stylesheet" href="/static/css/result.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/static/js/result.js"></script>
     <link type="text/css" rel="stylesheet" href="/static/css/app.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/result.css" />
   </head>
   <body>
-    {{ template "content" . }}
+    <div class="page">
+      {{ template "content" . }}
+    </div>
   </body>
 </html>
 {{ end }}
