@@ -6,7 +6,6 @@ import (
 	"github.com/c4urself/hackathon/mosaic"
 	"github.com/gin-gonic/gin"
 	"html/template"
-	"net/http"
 )
 
 const BASE_TMPL = "templates/base.tmpl"
@@ -14,6 +13,7 @@ const BASE_TMPL = "templates/base.tmpl"
 func StartApp() {
 	r := gin.Default()
 	r.Static("/static", "./static")
+	r.LoadHTMLGlob("templates/*")
 
 	// Homepage
 	r.GET("/", func(c *gin.Context) {
@@ -39,8 +39,8 @@ func StartApp() {
 	})
 
 	// Result page
-	r.GET("/result", func(c *gin.Context) {
-		c.String(http.StatusOK, "arst")
+	r.GET("/result/:username", func(c *gin.Context) {
+		c.HTML(200, "result.tmpl", gin.H{"username": c.Params.ByName("username")})
 	})
 
 	// Mosaic page

@@ -1,0 +1,155 @@
+body {
+	margin: 0;
+	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 16px;
+}
+
+.viewer {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.viewer .sidebar {
+	width: 363px;
+	float: left;
+}
+
+.viewer .sidebar .menu {
+	position: relative;
+	z-index: 1;
+	box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.viewer .sidebar .menu .logo {
+	background: url(../img/mosaic-logo.png) no-repeat center 49px;
+	background-size: 150px;
+	width: 100%;
+	height: 115px;
+}
+
+.viewer .sidebar .menu .search {
+	text-align: center;
+	border-top: 2px solid #e0e0e0;
+	border-bottom: 2px solid #e0e0e0;
+	padding: 10px 0;
+	color: #999;
+}
+
+.viewer .sidebar .menu .search input {
+	display: inline-block;
+	margin: 0;
+	width: 100px;
+	font-family: sans-serif;
+	font-size: 16px;
+	appearance: none;
+	box-shadow: none;
+	border-radius: none;
+	border: 0;
+}
+
+.viewer .sidebar .menu .search input:focus {
+	outline: none;
+}
+
+.viewer .sidebar .photos {
+	overflow: hidden;
+	position: relative;
+	z-index: 0;
+}
+
+.viewer .sidebar .photos .photo {
+	position: relative;
+	width: 50%;
+	float: left;
+}
+
+.viewer .sidebar .photos .photo img {
+	width: 100%;
+}
+
+.viewer .sidebar .photos .photo:after {
+	display: block;
+	content: " ";
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	box-shadow: inset 0 0 100px 0 rgba(0, 0, 0, 0.7);
+	border: 3px solid white;
+	box-sizing: border-box;
+	z-index: 0;
+	transition: all 0.3s;
+	opacity: 0;
+}
+
+.viewer .sidebar .photos .photo:hover {
+	cursor: pointer;
+}
+
+.viewer .sidebar .photos .photo:hover:after,
+.viewer .sidebar .photos .photo.active:after {
+	opacity: 1;
+}
+
+.viewer .sidebar .photos .photo:hover .likes,
+.viewer .sidebar .photos .photo.active .likes {
+	opacity: 1;
+}
+
+.viewer .sidebar .photos .photo .likes {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	color: #fff;
+	font-size: 14px;
+	line-height: 40px;
+	text-align: right;
+	box-sizing: border-box;
+	padding: 0 10px;
+	opacity: 0;
+	transition: all 0.3s;
+	z-index: 1;
+}
+
+.viewer .sidebar .photos .photo .likes:before {
+	content: "❤ ";
+}
+
+.viewer .mosaic {
+	position: relative;
+	height: 100%;
+	margin-left: 363px;
+	background: #34495e;
+	z-index: 2;
+}
+
+.viewer .mosaic:before {
+	display: block;
+	content: " ";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 1px;
+	height: 100%;
+	box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.viewer .mosaic .mat {
+	width: 640px;
+	height: 640px;
+	border: 10px solid white;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -330px;
+	margin-top: -330px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.3);
+	background: #fff;
+}
+
+.viewer .mosaic img {
+	width: 100%;
+}
