@@ -2,7 +2,7 @@ package mosaic
 
 import (
 	"fmt"
-	"github.com/c4urself/hackathon/feeders"
+	"github.com/c4urself/hackathon/app/feeders"
 	"image"
 	"image/png"
 	"os"

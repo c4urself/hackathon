@@ -1,12 +1,12 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/c4urself/hackathon/feeders"
-	"github.com/c4urself/hackathon/mosaic"
+	"github.com/c4urself/hackathon/app/feeders"
+	"github.com/c4urself/hackathon/app/mosaic"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
-	"encoding/json"
 	"html/template"
 	"strings"
 )

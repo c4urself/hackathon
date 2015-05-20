@@ -69,19 +69,19 @@ func GetCreatorFeed(username string) CreatorFeed {
 	defer resp.Body.Close()
 
 	if err != nil {
-		log.Printf("Unable to load instagram feed", err)
+		log.Printf("Unable to load instagram feed %v", err)
 		return CreatorFeed{}
 	}
 
 	bresp, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Unable to read instagram feed", err)
+		log.Printf("Unable to read instagram feed %v", err)
 		return CreatorFeed{}
 	}
 
 	jresp, err := gabs.ParseJSON(bresp)
 	if err != nil {
-		log.Printf("Unable to parse instagram feed", err)
+		log.Printf("Unable to parse instagram feed %v", err)
 		return CreatorFeed{}
 	}
 
