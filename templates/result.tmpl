@@ -13,46 +13,12 @@
 					</div>
 				</div>
 				<div class="photos">
-					<div class="photo" data-mosaic="http://127.0.0.1:8080/static/mosaic/nba/2a82622c9553223cefd81c1691583126.png">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-	15/e15/11282283_851878371565160_2083406795_n.jpg"/>
-						<span class="likes">161962</span>
-					</div>
-					<div class="photo" data-mosaic="http://127.0.0.1:8080/static/mosaic/nba/bedb0f06b39fa325aec128102c1d62d2.png">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/e15/11326726_817151688367667_437380497_n.jpg"/>
-						<span class="likes">101063</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/e15/11325984_366669180200793_618547902_n.jpg"/>
-						<span class="likes">99666</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/e15/11247135_990038841008522_117649619_n.jpg"/>
-						<span class="likes">88338</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11283305_829868777107786_801268707_n.jpg"/>
-						<span class="likes">87580</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11283305_829868777107786_801268707_n.jpg"/>
-						<span class="likes">87580</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/e15/11325984_366669180200793_618547902_n.jpg"/>
-						<span class="likes">99666</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/e15/11247135_990038841008522_117649619_n.jpg"/>
-						<span class="likes">88338</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11283305_829868777107786_801268707_n.jpg"/>
-						<span class="likes">87580</span>
-					</div>
-					<div class="photo">
-						<img src="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11283305_829868777107786_801268707_n.jpg"/>
-						<span class="likes">87580</span>
-					</div>
+					{{ range $index, $mosaic := .mosaics }}
+						<div class="photo" data-mosaic="/static/mosaic/nba/{{ $mosaic.RelativeUrl }}">
+							<img src="{{ $mosaic.OriginalUrl }}" />
+							<span class="likes">{{ $mosaic.Likes }}</span>
+						</div>
+					{{ end }}
 				</div>
 			</div>
 			<div class="mosaic">

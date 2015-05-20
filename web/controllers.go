@@ -39,11 +39,6 @@ func StartApp() {
 	})
 
 	// Result page
-	r.GET("/result/:username", func(c *gin.Context) {
-		c.HTML(200, "result.tmpl", gin.H{"username": c.Params.ByName("username")})
-	})
-
-	// Mosaic page
 	r.GET("/mosaic/:username", func(c *gin.Context) {
 		username := c.Params.ByName("username")
 		mosaics := mosaic.MakeInstagramMosaic(
@@ -52,10 +47,10 @@ func StartApp() {
 			fmt.Sprintf("/tmp/hack/%s/audience/", username),
 			fmt.Sprintf("./static/mosaic/%s/", username))
 
-		c.JSON(200, gin.H{
-			"username": username,
+		c.HTML(200, "result.tmpl", gin.H{
+			"username": c.Params.ByName("username"),
 			"baseUrl":  fmt.Sprintf("/static/mosaic/%s/", username),
-			"mosaics":  mosaics})
+			"mosaics": mosaics})
 	})
 
 	r.Run(":8080")

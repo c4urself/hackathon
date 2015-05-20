@@ -44,7 +44,7 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 	os.MkdirAll(mosaicDir, 0777)
 
 	feed := feeders.GetCreatorFeed(username)
-	topPhotos := feed.GetTopPhotos(5)
+	topPhotos := feed.GetTopPhotos(6)
 
 	feeders.LoadPhotos(topPhotos, photosDir)
 	feeders.LoadPhotos(feed.Audience, audienceDir)
