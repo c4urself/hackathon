@@ -124,11 +124,15 @@ func GetCreatorFeed(username string) CreatorFeed {
 
 func LoadPhotos(photos Photos, baseDir string) {
 	var tasks chan Task = make(chan Task)
-	var reports chan bool = make(chan bool)
+
+	workers := 10
+	if len(photos) < workers {
+		workers = len(photos)
+	}
 
 	// Run 10 parallel tasks
-	for i := 0; i < 10; i++ {
-		go loader(tasks, reports)
+	for i := 0; i < workers; i++ {
+		go loader(tasks)
 	}
 
 	// Populate channel with tasks
@@ -138,12 +142,6 @@ func LoadPhotos(photos Photos, baseDir string) {
 			path: filepath.Join(baseDir, fmt.Sprintf("%s.png", photo.Id))}
 	}
 	close(tasks)
-
-	// Wait till all workers complete their job
-	for i := 0; i < len(photos); i++ {
-		<-reports
-	}
-	close(reports)
 }
 
 type Task struct {
@@ -151,7 +149,7 @@ type Task struct {
 	path string
 }
 
-func loader(tasks <-chan Task, reports chan bool) {
+func loader(tasks <-chan Task) {
 	for task := range tasks {
 		log.Printf("Loading url %s", task.url)
 
@@ -159,26 +157,21 @@ func loader(tasks <-chan Task, reports chan bool) {
 		defer file.Close()
 		if err != nil {
 			log.Printf("Unable to creator destination file %s, %s", task.path, err)
-			reports <- false
 			continue
 		}
 
 		resp, err := http.Get(task.url)
 		if err != nil {
 			log.Printf("Unable to fetch url %s, %s", task.url, err)
-			reports <- false
 			continue
 		}
 
 		img, err := jpeg.Decode(resp.Body)
 		if err != nil {
 			log.Printf("Unable to convert jpg -> png %s, %s", task.url, err)
-			reports <- false
 			continue
 		}
 
 		png.Encode(file, img)
-
-		reports <- true
 	}
 }

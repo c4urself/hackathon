@@ -58,7 +58,7 @@ func MakeInstagramMosaic(username string, photosDir string, audienceDir string, 
 	for _, photo := range topPhotos {
 		photoPath := filepath.Join(photosDir, fmt.Sprintf("%s.png", photo.Id))
 		mosaicPath := filepath.Join(mosaicDir, fmt.Sprintf("%s.png", photo.Id))
-		MakeMosaic(photoPath, audienceDir, mosaicPath, 5)
+		MakeMosaic(photoPath, audienceDir, mosaicPath, 15)
 
 		mosaic = append(mosaic, Mosaic{
 			Id:          photo.Id,
