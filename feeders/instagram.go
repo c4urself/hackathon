@@ -15,7 +15,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 type Photo struct {
@@ -54,7 +53,13 @@ func Hash(s string) string {
 
 func (f CreatorFeed) GetTopPhotos(count int) Photos {
 	sort.Sort(sort.Reverse(Photos(f.Photos)))
-	topPhotos := f.Photos[:count]
+	var topPhotos Photos
+
+	if count > len(f.Photos) {
+		topPhotos = f.Photos[:len(f.Photos)]
+	} else {
+		topPhotos = f.Photos[:count]
+	}	
 	return topPhotos
 }
 
@@ -118,39 +123,62 @@ func GetCreatorFeed(username string) CreatorFeed {
 }
 
 func LoadPhotos(photos Photos, baseDir string) {
-	var wg sync.WaitGroup
+	var tasks chan Task = make(chan Task)
+	var reports chan bool = make(chan bool)
 
-	for _, photo := range photos {
-		wg.Add(1)
-
-		go func(p Photo, b string) {
-			defer wg.Done()
-
-			log.Printf("Loading photo %s", p.Url)
-
-			fPath := filepath.Join(b, fmt.Sprintf("%s.png", p.Id))
-			f, err := os.Create(fPath)
-			defer f.Close()
-			if err != nil {
-				log.Printf("Unable to create photo for loading %s, %s", fPath, err)
-				return
-			}
-
-			resp, err := http.Get(p.Url)
-			if err != nil {
-				log.Printf("Unable to fetch photo %s, %s", p.Url, err)
-				return
-			}
-
-			img, err := jpeg.Decode(resp.Body)
-			if err != nil {
-				log.Printf("Unable to convert jpg -> png %s, %s", p.Url, err)
-				return
-			}
-
-			png.Encode(f, img)
-		}(photo, baseDir)
+	// Run 10 parallel tasks
+	for i := 0; i < 10; i++ {
+		go loader(tasks, reports)
 	}
 
-	wg.Wait()
+	// Populate channel with tasks
+	for _, photo := range photos {
+		tasks <- Task{
+			url: photo.Url,
+			path: filepath.Join(baseDir, fmt.Sprintf("%s.png", photo.Id))}
+	}
+	close(tasks)
+
+	// Wait till all workers complete their job
+	for i := 0; i < len(photos); i++ {
+		<-reports
+	}
+	close(reports)
+}
+
+type Task struct {
+	url string
+	path string
+}
+
+func loader(tasks <-chan Task, reports chan bool) {
+	for task := range tasks {
+		log.Printf("Loading url %s", task.url)
+
+		file, err := os.Create(task.path)
+		defer file.Close()
+		if err != nil {
+			log.Printf("Unable to creator destination file %s, %s", task.path, err)
+			reports <- false
+			continue
+		}
+
+		resp, err := http.Get(task.url)
+		if err != nil {
+			log.Printf("Unable to fetch url %s, %s", task.url, err)
+			reports <- false
+			continue
+		}
+
+		img, err := jpeg.Decode(resp.Body)
+		if err != nil {
+			log.Printf("Unable to convert jpg -> png %s, %s", task.url, err)
+			reports <- false
+			continue
+		}
+
+		png.Encode(file, img)
+
+		reports <- true
+	}
 }
