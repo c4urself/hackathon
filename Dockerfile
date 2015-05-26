@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER Ryuk The Shinigami "dev@tubularlabs.com"
+MAINTAINER Christian Verkerk "christian@example.com"
 
 # Install base
 RUN apt-get update --fix-missing
